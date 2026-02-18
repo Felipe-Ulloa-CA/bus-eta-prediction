@@ -8,6 +8,14 @@ The objective is to evaluate whether supervised learning models can reduce predi
 
 ---
 
+## Problem Context
+
+Urban bus ETA prediction is a classical spatiotemporal regression problem where schedule-based estimates often fail due to operational variability.
+
+This project evaluates how much predictive power can be extracted from structural GTFS features alone, establishing a lower-bound performance baseline before integrating dynamic operational data (e.g., GPS streams, congestion signals).
+
+---
+
 ## Data Sources
 
 The analysis uses official GTFS data published by the Dirección de Transporte Público Metropolitano (DTPM), Chile.
@@ -38,6 +46,16 @@ The project follows a CRISP-DM framework:
 - direction_id
 - is_weekend
 - route_trip_count
+
+---
+
+## Baseline Definition
+
+This project defines a structural baseline using only static GTFS-derived features.
+
+The purpose is to quantify model performance before incorporating real-time operational signals.
+
+This enables clear performance benchmarking for future production-grade ETA systems.
 
 ---
 
@@ -77,6 +95,28 @@ Random Forest achieved:
 - Segment-level modeling
 - Cross-validation and hyperparameter tuning
 - Model monitoring for production deployment
+
+---
+
+## Scalability Considerations
+
+- The current implementation processes trip-level aggregated data.
+- The modeling pipeline can be extended to distributed processing frameworks (e.g., Spark).
+- Real-time deployment would require streaming ingestion (e.g., Kafka) and model serving APIs.
+- Feature store integration would improve reproducibility and monitoring.
+
+The architecture can scale from offline batch modeling to near-real-time ETA inference systems.
+
+---
+
+## Limitations
+
+- No real-time GPS signals were used.
+- No congestion or traffic indicators included.
+- No cross-validation or hyperparameter optimization in baseline phase.
+- Evaluation performed on static train/test split.
+
+These constraints define the structural nature of the baseline.
 
 ---
 
