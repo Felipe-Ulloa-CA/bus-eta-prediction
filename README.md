@@ -68,15 +68,17 @@ This enables clear performance benchmarking for future production-grade ETA syst
 
 ## Results
 
-| Model | MAE (sec) | RMSE (sec) |
-|-------|-----------|------------|
-| Linear Regression | 1480.75 | 1831.71 |
-| Random Forest | 1209.44 | 1540.75 |
+| Model               | MAE (sec) | RMSE (sec) |
+|---------------------|----------|-----------|
+| Linear Regression   | 1480.75  | 1831.71   |
+| Random Forest       | 1209.44  | 1540.75   |
 
 Random Forest achieved:
 
 - 16% reduction in RMSE compared to Linear Regression
 - R² = 0.308 (explains 30.8% of variance)
+  
+These results are consistent with the expected 15–25% improvement defined in the project proposal (Module 16).
 
 ---
 
