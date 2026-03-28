@@ -93,8 +93,17 @@ Random Forest achieved:
 - Integration of real-time GPS data
 - Peak-hour feature engineering
 - Segment-level modeling
-- Cross-validation and hyperparameter tuning
 - Model monitoring for production deployment
+
+---
+
+## Model Validation and Optimization
+
+Cross-validation and hyperparameter tuning were implemented to evaluate model robustness and optimize performance.
+
+Optimal parameters identified:
+- max_depth = 10
+- n_estimators = 50
 
 ---
 
@@ -113,7 +122,7 @@ The architecture can scale from offline batch modeling to near-real-time ETA inf
 
 - No real-time GPS signals were used.
 - No congestion or traffic indicators included.
-- No cross-validation or hyperparameter optimization in baseline phase.
+- Cross-validation and hyperparameter optimization were not part of the initial baseline phase but were later implemented to improve model robustness.
 - Evaluation performed on static train/test split.
 
 These constraints define the structural nature of the baseline.
@@ -122,7 +131,7 @@ These constraints define the structural nature of the baseline.
 
 ## How to Run
 
-1. Open `bus_eta_model.ipynb`
+1. Open bus_eta_model_calibrated.ipynb
 2. Run all cells (Colab recommended)
 3. Ensure required Python libraries are installed:
    - pandas
