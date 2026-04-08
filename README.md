@@ -21,6 +21,7 @@ Traditional schedule-based methods often fail to capture these dynamics. This pr
 The analysis uses official GTFS data published by the Dirección de Transporte Público Metropolitano (DTPM), Chile.
 
 Files used:
+
 - `stop_times.txt` – stop-level timestamps  
 - `trips.txt` – trip-level metadata  
 - `routes.txt`  
@@ -48,17 +49,15 @@ The project follows the CRISP-DM framework:
 
 ## Feature Engineering
 
-The model incorporates both structural and temporal features derived from GTFS data:
+The model incorporates structural and temporal features derived from GTFS data:
 
 - `direction_id`  
 - `is_weekend`  
 - `route_trip_count`  
-- `hour` (departure hour)  
 - `day_of_week`  
 - `number_of_stops`  
-- `scheduled_duration` (proxy based on GTFS timing)  
 
-These features significantly expand the predictive capability compared to the initial baseline.
+These features expand the predictive capability compared to the initial baseline (3 → 5 features).
 
 ---
 
@@ -67,14 +66,14 @@ These features significantly expand the predictive capability compared to the in
 EDA was conducted to understand patterns in trip duration:
 
 - Distribution of trip durations  
-- Trip duration by hour of day  
 - Weekend vs weekday comparisons  
 - Correlation analysis between features  
 
 Key findings:
-- Strong temporal patterns exist across different hours of the day  
+
 - Trip duration varies between weekdays and weekends  
-- Relationships are mostly non-linear, supporting tree-based models  
+- Strong relationship exists between number of stops and trip duration  
+- Relationships are non-linear, supporting tree-based models  
 
 ---
 
@@ -88,12 +87,13 @@ Key findings:
 
 ## Model Validation and Optimization
 
-- Cross-validation was used to evaluate robustness across multiple splits  
-- GridSearchCV was applied to optimize hyperparameters  
+- Cross-validation was used to evaluate robustness  
+- GridSearchCV was applied for hyperparameter tuning  
 
 Optimal parameters:
+
 - `n_estimators = 50`  
-- `max_depth = 10`  
+- `max_depth = 5`  
 
 ---
 
@@ -103,36 +103,40 @@ The final tuned model was evaluated on a held-out test set to assess real-world 
 
 Results:
 
-- Random Forest reduces RMSE by approximately **15–16%** compared to Linear Regression  
-- R² ≈ **0.30**, indicating moderate explanatory power  
+- Linear Regression RMSE ≈ 385  
+- Random Forest RMSE ≈ 211  
+- Tuned Random Forest RMSE ≈ 164  
+
+- RMSE improvement ≈ **57%** over Linear Regression  
+- R² ≈ **0.97**, indicating strong predictive performance  
 
 ---
 
 ## Key Findings
 
-- GTFS-derived structural and temporal features partially explain trip duration variability  
 - Feature expansion significantly improves model performance  
 - Non-linear models outperform linear models  
-- Remaining error suggests missing dynamic variables (traffic, congestion, GPS)  
+- Structural GTFS features can explain a large portion of trip duration variability  
+- Number of stops is a key driver of travel time  
 
 ---
 
 ## Model Insights
 
-- Feature importance analysis shows that temporal and duration-related features dominate  
-- Residual analysis indicates underestimation in high-variability scenarios  
+- Feature importance analysis highlights structural variables as dominant predictors  
+- Residual analysis shows remaining variability in complex scenarios  
 - The gap between cross-validation and test performance suggests mild overfitting  
+
+The strong model performance may be influenced by the structured nature of GTFS data, which captures consistent relationships between operational variables and trip duration.
 
 ---
 
 ## Limitations
 
 - No real-time GPS data included  
-- No congestion or traffic indicators  
+- No traffic or congestion indicators  
 - Model relies on static GTFS features  
-- Moderate generalization performance  
-
-These limitations define the baseline nature of the model.
+- Performance may be optimistic due to structured data  
 
 ---
 
@@ -163,11 +167,12 @@ These limitations define the baseline nature of the model.
 2. Run all cells (Google Colab recommended)
 
 3. Required libraries:
-   - pandas  
-   - numpy  
-   - matplotlib  
-   - seaborn  
-   - scikit-learn  
+
+- pandas  
+- numpy  
+- matplotlib  
+- seaborn  
+- scikit-learn  
 
 ---
 
