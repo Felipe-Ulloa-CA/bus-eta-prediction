@@ -2,17 +2,17 @@
 
 ## Project Overview
 
-This project develops a machine learning baseline model to predict bus trip durations in Santiago, Chile using structural GTFS data.
+This project develops a machine learning model to predict bus trip durations in Santiago, Chile using GTFS (General Transit Feed Specification) data.
 
-The objective is to evaluate whether supervised learning models can reduce prediction error compared to traditional schedule-based estimation methods.
+The objective is to evaluate how much predictive performance can be achieved using engineered structural and temporal features, and to establish a strong baseline before incorporating real-time operational data.
 
 ---
 
 ## Problem Context
 
-Urban bus ETA prediction is a classical spatiotemporal regression problem where schedule-based estimates often fail due to operational variability.
+Bus ETA prediction is a complex spatiotemporal problem influenced by traffic conditions, operational variability, and route characteristics.
 
-This project evaluates how much predictive power can be extracted from structural GTFS features alone, establishing a lower-bound performance baseline before integrating dynamic operational data (e.g., GPS streams, congestion signals).
+Traditional schedule-based methods often fail to capture these dynamics. This project evaluates whether machine learning models using GTFS-derived features can reduce prediction error and improve reliability.
 
 ---
 
@@ -21,126 +21,153 @@ This project evaluates how much predictive power can be extracted from structura
 The analysis uses official GTFS data published by the Dirección de Transporte Público Metropolitano (DTPM), Chile.
 
 Files used:
-- stop_times.txt
-- trips.txt
-- routes.txt
-- calendar.txt
-- transfers.txt
+- `stop_times.txt` – stop-level timestamps  
+- `trips.txt` – trip-level metadata  
+- `routes.txt`  
+- `calendar.txt`  
+- `transfers.txt`  
 
-These files allow reconstruction of trip durations and structural route characteristics.
+These datasets allow reconstruction of trip durations and route structure.
 
 ---
 
 ## Methodology
 
-The project follows a CRISP-DM framework:
+The project follows the CRISP-DM framework:
 
-1. Data Cleaning
-2. Outlier Removal
-3. Feature Engineering
-4. Baseline Modeling
-5. Residual Analysis
-
-### Features Used
-
-- direction_id
-- is_weekend
-- route_trip_count
+1. Data Cleaning  
+2. Feature Engineering  
+3. Exploratory Data Analysis (EDA)  
+4. Baseline Modeling  
+5. Model Validation (Cross-Validation)  
+6. Hyperparameter Tuning (GridSearchCV)  
+7. Final Model Evaluation (Test Set)  
+8. Residual Analysis  
 
 ---
 
-## Baseline Definition
+## Feature Engineering
 
-This project defines a structural baseline using only static GTFS-derived features.
+The model incorporates both structural and temporal features derived from GTFS data:
 
-The purpose is to quantify model performance before incorporating real-time operational signals.
+- `direction_id`  
+- `is_weekend`  
+- `route_trip_count`  
+- `hour` (departure hour)  
+- `day_of_week`  
+- `number_of_stops`  
+- `scheduled_duration` (proxy based on GTFS timing)  
 
-This enables clear performance benchmarking for future production-grade ETA systems.
+These features significantly expand the predictive capability compared to the initial baseline.
+
+---
+
+## Exploratory Data Analysis (EDA)
+
+EDA was conducted to understand patterns in trip duration:
+
+- Distribution of trip durations  
+- Trip duration by hour of day  
+- Weekend vs weekday comparisons  
+- Correlation analysis between features  
+
+Key findings:
+- Strong temporal patterns exist across different hours of the day  
+- Trip duration varies between weekdays and weekends  
+- Relationships are mostly non-linear, supporting tree-based models  
 
 ---
 
 ## Models Implemented
 
-- Linear Regression
-- Random Forest Regressor
-
----
-
-## Results
-
-| Model               | MAE (sec) | RMSE (sec) |
-|---------------------|----------|-----------|
-| Linear Regression   | 1480.75  | 1831.71   |
-| Random Forest       | 1209.44  | 1540.75   |
-
-Random Forest achieved:
-
-- 16% reduction in RMSE compared to Linear Regression
-- R² = 0.308 (explains 30.8% of variance)
-  
-These results are consistent with the expected 15–25% improvement defined in the project proposal (Module 16).
-
----
-
-## Key Findings
-
-- Structural GTFS features partially explain trip duration variability.
-- Significant unexplained variance suggests dynamic operational variables (e.g., congestion, peak-hour effects) are required for higher precision ETA prediction.
-- This establishes a strong structural baseline for future real-time modeling.
-
----
-
-## Future Improvements
-
-- Integration of real-time GPS data
-- Peak-hour feature engineering
-- Segment-level modeling
-- Model monitoring for production deployment
+- Linear Regression (baseline model)  
+- Random Forest Regressor  
+- Tuned Random Forest (GridSearchCV)  
 
 ---
 
 ## Model Validation and Optimization
 
-Cross-validation and hyperparameter tuning were implemented to evaluate model robustness and optimize performance.
+- Cross-validation was used to evaluate robustness across multiple splits  
+- GridSearchCV was applied to optimize hyperparameters  
 
-Optimal parameters identified:
-- max_depth = 10
-- n_estimators = 50
+Optimal parameters:
+- `n_estimators = 50`  
+- `max_depth = 10`  
 
 ---
 
-## Scalability Considerations
+## Model Evaluation (Test Set)
 
-- The current implementation processes trip-level aggregated data.
-- The modeling pipeline can be extended to distributed processing frameworks (e.g., Spark).
-- Real-time deployment would require streaming ingestion (e.g., Kafka) and model serving APIs.
-- Feature store integration would improve reproducibility and monitoring.
+The final tuned model was evaluated on a held-out test set to assess real-world performance.
 
-The architecture can scale from offline batch modeling to near-real-time ETA inference systems.
+Results:
+
+- Random Forest reduces RMSE by approximately **15–16%** compared to Linear Regression  
+- R² ≈ **0.30**, indicating moderate explanatory power  
+
+---
+
+## Key Findings
+
+- GTFS-derived structural and temporal features partially explain trip duration variability  
+- Feature expansion significantly improves model performance  
+- Non-linear models outperform linear models  
+- Remaining error suggests missing dynamic variables (traffic, congestion, GPS)  
+
+---
+
+## Model Insights
+
+- Feature importance analysis shows that temporal and duration-related features dominate  
+- Residual analysis indicates underestimation in high-variability scenarios  
+- The gap between cross-validation and test performance suggests mild overfitting  
 
 ---
 
 ## Limitations
 
-- No real-time GPS signals were used.
-- No congestion or traffic indicators included.
-- Cross-validation and hyperparameter optimization were not part of the initial baseline phase but were later implemented to improve model robustness.
-- Evaluation performed on static train/test split.
+- No real-time GPS data included  
+- No congestion or traffic indicators  
+- Model relies on static GTFS features  
+- Moderate generalization performance  
 
-These constraints define the structural nature of the baseline.
+These limitations define the baseline nature of the model.
+
+---
+
+## Future Improvements
+
+- Integration of real-time GPS data  
+- Traffic and congestion features  
+- Segment-level modeling  
+- Gradient Boosting / XGBoost  
+- Real-time deployment (streaming pipelines, APIs)  
+
+---
+
+## Scalability Considerations
+
+- Current pipeline operates on batch GTFS data  
+- Can be extended to distributed processing (e.g., Spark)  
+- Real-time deployment could use Kafka + model APIs  
+- Feature store integration for production systems  
 
 ---
 
 ## How to Run
 
-1. Open bus_eta_model_calibrated.ipynb
-2. Run all cells (Colab recommended)
-3. Ensure required Python libraries are installed:
-   - pandas
-   - numpy
-   - seaborn
-   - matplotlib
-   - scikit-learn
+1. Open the notebook:  
+   `bus_eta_model_calibrated.ipynb`
+
+2. Run all cells (Google Colab recommended)
+
+3. Required libraries:
+   - pandas  
+   - numpy  
+   - matplotlib  
+   - seaborn  
+   - scikit-learn  
 
 ---
 
@@ -154,4 +181,5 @@ Silicon Valley, California
 
 ## License
 
-MIT License
+MIT License  
+https://github.com/Felipe-Ulloa-CA/bus-eta-prediction
